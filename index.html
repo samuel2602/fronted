@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Académico - Gestión de Usuarios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Azul institucional */
+            --primary-light: #3b82f6;
+            --accent: #f59e0b; /* Tono dorado colegial */
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #334155;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- LOGIN STYLES --- */
+        #login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.9), rgba(59, 130, 246, 0.8)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-card h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .login-card p {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        /* --- APP STYLES --- */
+        #app-container {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.95rem;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            width: 100%;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border-top: 4px solid var(--primary-light);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+
+        .btn-secondary { background: #64748b; color: white; }
+        .btn-secondary:hover { background: #475569; }
+
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #16a34a; }
+
+        /* --- TABLE --- */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* --- ALERTS --- */
+        #mensaje {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 0.85rem;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= VISTA DE LOGIN ================= -->
+    <div id="login-container">
+        <div class="login-card">
+            <h2>Portal Institucional</h2>
+            <p>Ingresa tus credenciales de Administrador</p>
+            <form id="login-form">
+                <div class="form-group" style="margin-bottom: 15px; text-align: left;">
+                    <label>Usuario / Correo</label>
+                    <input type="text" id="login-user" placeholder="ej. admin@colegio.edu" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 20px; text-align: left;">
+                    <label>Contraseña</label>
+                    <input type="password" id="login-pass" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Iniciar Sesión</button>
+            </form>
+            <p id="login-error" style="color: var(--danger); font-size: 0.85rem; margin-top: 15px; display: none;"></p>
+        </div>
+    </div>
+
+    <!-- ================= VISTA DEL PANEL PRINCIPAL (CRUD) ================= -->
+    <div id="app-container">
+        <header>
+            <h1>🏫 Sistema Escolar - Gestión de Usuarios</h1>
+            <div class="user-info">
+                <span id="user-display-name">Bienvenido, Admin</span>
+                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.85rem;" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Formulario Crear / Editar -->
+            <div class="card">
+                <h2 id="form-title">➕ Registrar Nuevo Usuario</h2>
+                <form id="user-form">
+                    <input type="hidden" id="user-id">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" id="nombre" placeholder="Ej. Walter" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Apellido</label>
+                            <input type="text" id="apellido" placeholder="Ej. Muñoz" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cédula</label>
+                            <input type="text" id="cedula" placeholder="Ej. 147223974" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Correo Electrónico</label>
+                            <input type="email" id="correo" placeholder="correo@colegio.edu" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Celular / Teléfono</label>
+                            <input type="text" id="celular" placeholder="313273994" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Rol ID</label>
+                            <input type="number" id="rol_id" value="2" placeholder="2" required>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button type="submit" class="btn btn-primary" id="btn-save">Guardar Usuario</button>
+                        <button type="button" class="btn btn-secondary" id="btn-cancel" style="display:none;" onclick="resetForm()">Cancelar</button>
+                    </div>
+                </form>
+                <div id="mensaje"></div>
+            </div>
+
+            <!-- Tabla de Usuarios -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>📋 Listado General de Comunidad Estudiantil</h2>
+                    <button class="btn btn-success" style="padding: 8px 15px; font-size: 0.85rem;" onclick="cargarUsuarios()">🔄 Actualizar Tabla</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Cédula</th>
+                                <th>Correo</th>
+                                <th>Celular</th>
+                                <th>Rol ID</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usuarios-tbody">
+                            <tr><td colspan="8" style="text-align: center; color: #64748b;">Cargando datos del servidor...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 Sistema de Gestión Académica - Conectado a Render & MySQL</p>
+        </footer>
+    </div>
+
+    <script>
+        const API_URL = 'https://colegios-api.onrender.com/api/usuarios';
+
+        // Validar sesión activa en localStorage al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const sesionActiva = localStorage.getItem('admin_sesion');
+            if (sesionActiva) {
+                mostrarApp(sesionActiva);
+            }
+        });
+
+        // Lógica de Login Sencillo
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const usuario = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+
+            // Credenciales sencillas predeterminadas de prueba (puedes cambiarlas a tu gusto)
+            if (usuario === "admin" && pass === "1234") {
+                localStorage.setItem('admin_sesion', usuario);
+                mostrarApp(usuario);
+            } else {
+                const err = document.getElementById('login-error');
+                err.textContent = "Usuario o contraseña incorrectos (Prueba admin / 1234)";
+                err.style.display = 'block';
+            }
+        });
+
+        function mostrarApp(nombreUsuario) {
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+            document.getElementById('user-display-name').textContent = `Admin: ${nombreUsuario}`;
+            cargarUsuarios();
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('admin_sesion');
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('login-container').style.display = 'flex';
+            document.getElementById('login-form').reset();
+        }
+
+        // Mostrar mensajes flotantes de alerta
+        function mostrarMensaje(texto, esError = false) {
+            const msg = document.getElementById('mensaje');
+            msg.textContent = texto;
+            msg.className = esError ? 'alert-error' : 'alert-success';
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 4000);
+        }
+
+        // --- FUNCIONES CRUD CONECTADAS A LA API DE RENDER ---
+
+        async function cargarUsuarios() {
+            try {
+                const res = await fetch(`${API_URL}/getUsuarios`);
+                const data = await res.json();
+                const tbody = document.getElementById('usuarios-tbody');
+                tbody.innerHTML = '';
+
+                const lista = Array.isArray(data) ? data : (data.data || []);
+
+                if (lista.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b;">No hay registros en la base de datos.</td></tr>`;
+                    return;
+                }
+
+                lista.forEach(user => {
+                    const uid = user.id || user.usuario_id;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${uid}</strong></td>
+                        <td>${user.nombre}</td>
+                        <td>${user.apellido}</td>
+                        <td>${user.cedula}</td>
+                        <td>${user.correo || user.email}</td>
+                        <td>${user.celular || user.telefono}</td>
+                        <td><span style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: 500;">Rol ${user.rol_id}</span></td>
+                        <td class="actions-cell">
+                            <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;" onclick='prepararEditar(${JSON.stringify(user)})'>Editar</button>
+                            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;" onclick="eliminarUsuario(${uid})">Eliminar</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error(error);
+                mostrarMensaje('Error de conexión al cargar la lista de usuarios.', true);
+            }
+        }
+
+        // Manejar envío de formulario (Crear POST o Actualizar PUT)
+        document.getElementById('user-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('user-id').value;
+            const userData = {
+                nombre: document.getElementById('nombre').value,
+                apellido: document.getElementById('apellido').value,
+                cedula: document.getElementById('cedula').value,
+                correo: document.getElementById('correo').value,
+                celular: document.getElementById('celular').value,
+                rol_id: parseInt(document.getElementById('rol_id').value)
+            };
+
+            try {
+                let res;
+                if (id) {
+                    // PUT (Actualizar completo para evitar errores de columnas nulas)
+                    res = await fetch(`${API_URL}/putUsuario/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(userData)
+                    });
+                } else {
+                    // POST (Crear)
+                    res = await fetch(`${API_URL}/postUsuario`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(userData)
+                    });
+                }
+
+                if (res.ok) {
+                    mostrarMensaje(id ? '¡Usuario actualizado exitosamente!' : '¡Usuario registrado exitosamente!');
+                    resetForm();
+                    cargarUsuarios();
+                } else {
+                    const errData = await res.json();
+                    mostrarMensaje(errData.error || 'Ocurrió un error al procesar los datos.', true);
+                }
+            } catch (error) {
+                console.error(error);
+                mostrarMensaje('Error crítico de red con el servidor.', true);
+            }
+        });
+
+        function prepararEditar(user) {
+            const uid = user.id || user.usuario_id;
+            document.getElementById('user-id').value = uid;
+            document.getElementById('nombre').value = user.nombre;
+            document.getElementById('apellido').value = user.apellido;
+            document.getElementById('cedula').value = user.cedula;
+            document.getElementById('correo').value = user.correo || user.email;
+            document.getElementById('celular').value = user.celular || user.telefono;
+            document.getElementById('rol_id').value = user.rol_id;
+
+            document.getElementById('form-title').textContent = `✏️ Editando Usuario (ID: ${uid})`;
+            document.getElementById('btn-save').textContent = 'Actualizar Cambios';
+            document.getElementById('btn-cancel').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            document.getElementById('user-form').reset();
+            document.getElementById('user-id').value = '';
+            document.getElementById('form-title').textContent = '➕ Registrar Nuevo Usuario';
+            document.getElementById('btn-save').textContent = 'Guardar Usuario';
+            document.getElementById('btn-cancel').style.display = 'none';
+        }
+
+        async function eliminarUsuario(id) {
+            if (!confirm(`¿Estás completamente seguro de eliminar al usuario con ID #${id}?`)) return;
+
+            try {
+                const res = await fetch(`${API_URL}/deleteUsuario/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (res.ok) {
+                    mostrarMensaje('¡Usuario eliminado del sistema correctamente!');
+                    cargarUsuarios();
+                } else {
+                    mostrarMensaje('No se pudo completar la eliminación.', true);
+                }
+            } catch (error) {
+                console.error(error);
+                mostrarMensaje('Error de red al intentar eliminar.', true);
+            }
+        }
+    </script>
+</body>
+</html>
